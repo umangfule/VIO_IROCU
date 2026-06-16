@@ -1,0 +1,39 @@
+<launch>
+  <!--
+    FULLY GPS-DENIED autonomous survey with an ArUco-bootstrapped takeoff.
+    Run AFTER bringup_aruco.launch, once /aruco/pose is publishing and the EKF has a
+    position (MAVProxy: VisOdom healthy). No GPS is used anywhere.
+
+    Flow: ArUco vision_pose -> arm -> stable vertical takeoff -> hover (VIO inits) ->
+    handover ArUco->VIO -> slow lawnmower over the whole arena -> RTL -> land on pad.
+  -->
+  <node pkg="ascend_navigation" type="aruco_vio_survey.py" name="aruco_vio_survey"
+        output="screen">
+    <param name="survey_alt"   value="2.5" />
+    <param name="hover_secs"   value="5.0" />
+    <param name="survey_speed" value="0.5" />
+    <param name="climb_speed"  value="0.4" />
+    <param name="lookahead"    value="0.8" />
+
+    <param name="x_min"        value="-3.0" />
+    <param name="x_max"        value="3.0" />
+    <param name="y_min"        value="-4.5" />
+    <param name="y_max"        value="4.5" />
+    <param name="lane_spacing" value="1.2" />
+
+    <param name="fence_x"      value="3.6" />
+    <param name="fence_y"      value="5.1" />
+    <param name="wp_tol"       value="0.3" />
+    <param name="land_xy_tol"  value="0.2" />
+
+    <param name="vins_settle"  value="4.0" />
+    <param name="vision_rate"  value="30.0" />
+
+    <!-- VIO-init excitation (monocular VINS needs motion to initialise). Box flown
+         on ArUco at a lower altitude where the pad fills the down-camera. -->
+    <param name="excite_alt"    value="1.5" />
+    <param name="excite_radius" value="0.7" />
+    <param name="excite_speed"  value="0.35" />
+    <param name="excite_cycles" value="3" />
+  </node>
+</launch>

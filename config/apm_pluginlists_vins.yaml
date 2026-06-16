@@ -1,0 +1,29 @@
+# MAVROS plugin blacklist for the VINS/VIO setup.
+# Same as the stock apm_pluginlists.yaml PLUS `odometry`.
+#
+# Why blacklist `odometry`:
+#   The odometry plugin is configured with frame_tf desired_frame "ned". On every
+#   FCU ODOMETRY message it tries to transform into 'odom_ned', which requires a
+#   TF path to the VINS 'world' frame. Those are two unconnected TF trees, so it
+#   spams:
+#     ODOM: Ex: Could not find a connection between 'odom_ned' and 'world' ...
+#   We feed VIO through /mavros/vision_pose/pose and read state from
+#   /mavros/local_position/*, so the odometry plugin is unused. Disabling it
+#   removes the error cleanly.
+plugin_blacklist:
+# common
+- actuator_control
+- ftp
+- safety_area
+- hil
+# extras
+- altitude
+- debug_value
+- image_pub
+- px4flow
+- vibration
+- vision_speed_estimate
+- wheel_odometry
+- odometry          # <-- added: stops the odom_ned<->world TF spam
+
+plugin_whitelist: []

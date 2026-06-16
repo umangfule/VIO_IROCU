@@ -1,0 +1,36 @@
+<launch>
+  <!--
+    Autonomous lawnmower survey mission for the ASCEND drone.
+    Start this ONLY after VIO is healthy (/vins_estimator/odometry and
+    /mavros/vision_pose/pose publishing, MAVProxy shows VisOdom: healthy).
+
+    Flow: autonomous takeoff -> hover 5 s -> SLOW lawnmower over the WHOLE arena
+    -> return home -> precision land on the base station. No further input
+    needed (rulebook 10.5.1).
+
+    The arena is centered on home (base station = arena centre), so the symmetric
+    lawnmower below sweeps the whole arena. All distances are local ENU metres.
+  -->
+  <node pkg="ascend_navigation" type="autonomous_survey.py" name="autonomous_survey"
+        output="screen">
+    <param name="survey_alt"   value="2.5" />   <!-- m AGL, rulebook 2-6 m -->
+    <param name="hover_secs"   value="5.0" />
+    <param name="survey_speed" value="0.5" />   <!-- m/s, slow & smooth -->
+    <param name="climb_speed"  value="0.4" />
+    <param name="lookahead"    value="0.8" />
+
+    <!-- Survey rectangle (symmetric about home); long passes along Y -->
+    <param name="x_min"        value="-3.0" />
+    <param name="x_max"        value="3.0" />
+    <param name="y_min"        value="-4.5" />
+    <param name="y_max"        value="4.5" />
+    <param name="lane_spacing" value="1.2" />
+
+    <!-- Geofence half-extents (arena bounds). Setpoints clamped here. -->
+    <param name="fence_x"      value="3.6" />
+    <param name="fence_y"      value="5.1" />
+
+    <param name="wp_tol"       value="0.3" />
+    <param name="land_xy_tol"  value="0.2" />
+  </node>
+</launch>

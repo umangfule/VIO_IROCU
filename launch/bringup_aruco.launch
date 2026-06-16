@@ -1,0 +1,37 @@
+<launch>
+  <!--
+    Software bringup for the FULLY GPS-DENIED ArUco+VIO flow:
+      * VINS-Mono WITHOUT vins_to_mavros (bridge:=false) — the survey node is the
+        sole /mavros/vision_pose/pose publisher.
+      * aruco_localizer — detects the landing pad, publishes /aruco/pose.
+      * MAVROS with the VIO TF fix.
+
+    Prereqs in their own terminals: roscore, Gazebo (mars_arena.world), ArduPilot
+    SITL with sitl_vins_nogps.parm loaded. Then run this, then aruco_survey.launch.
+  -->
+  <arg name="fcu_url" default="udp://:14551@127.0.0.1:14555" />
+
+  <include file="$(find vins_estimator)/launch/sitl.launch">
+    <arg name="bridge" value="false" />
+  </include>
+
+  <node name="aruco_localizer" pkg="ascend_navigation" type="aruco_localizer.py"
+        output="screen">
+    <param name="image_topic"       value="/iris_demo/cam0/image_raw" />
+    <param name="camera_info_topic" value="/iris_demo/cam0/camera_info" />
+    <!-- pad->ENU axis mapping. The ArUco board is placed at world origin with no yaw
+         (board +x = world East = Gazebo +x, board +y = world North = Gazebo +y).
+         aruco_localizer computes camera position in board frame; east_from="+x"/
+         north_from="+y" maps board (x,y) directly to ENU (East,North). No extra
+         rotation is needed in aruco_vio_survey.py — the relay uses ArUco position
+         as-is. EK3_SRC1_YAW=1 (compass) is also in earth-ENU -> frames match.
+         If a future world has a yaw-rotated pad, adjust east_from/north_from here
+         (cardinal steps): +x/+y -> +y/-x -> -x/-y -> -y/+x for 0/90/180/270 deg. -->
+    <param name="east_from"  value="+x" />
+    <param name="north_from" value="+y" />
+  </node>
+
+  <include file="$(find ascend_navigation)/launch/apm_vins.launch">
+    <arg name="fcu_url" value="$(arg fcu_url)" />
+  </include>
+</launch>

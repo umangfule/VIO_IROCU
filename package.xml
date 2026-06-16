@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ascend_navigation</name>
+  <version>1.0.0</version>
+  <description>
+    Autonomous GPS-denied survey navigation for the IRoC-U 2026 ASCEND drone:
+    VINS-Mono VIO -> MAVROS bridge launch, MAVROS VIO config, and an autonomous
+    lawnmower survey mission (takeoff, hover, scan, precision land on base).
+  </description>
+  <maintainer email="fuleumang761@gmail.com">Umang</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>geographic_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>mavros_msgs</exec_depend>
+  <exec_depend>mavros</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>gazebo_msgs</exec_depend>
+</package>

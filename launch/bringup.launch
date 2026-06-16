@@ -1,0 +1,23 @@
+<launch>
+  <!--
+    One-shot bringup of the software side of the ASCEND VIO pipeline:
+      * VINS-Mono (feature_tracker + vins_estimator + pose_graph + vins_to_mavros)
+      * MAVROS with the VINS plugin/config fix (no odom_ned<->world TF spam)
+
+    Prereqs already running in their own terminals (they are heavy / interactive):
+      1. roscore
+      2. Gazebo with the Mars arena world
+      3. ArduPilot SITL (sim_vehicle.py)
+
+    Then run this, wait for VIO to go healthy, then start survey.launch.
+  -->
+  <arg name="fcu_url" default="udp://:14551@127.0.0.1:14555" />
+
+  <!-- VINS-Mono + odometry->vision_pose bridge -->
+  <include file="$(find vins_estimator)/launch/sitl.launch" />
+
+  <!-- MAVROS (VIO-friendly: odometry plugin disabled, map->world static TF) -->
+  <include file="$(find ascend_navigation)/launch/apm_vins.launch">
+    <arg name="fcu_url" value="$(arg fcu_url)" />
+  </include>
+</launch>
